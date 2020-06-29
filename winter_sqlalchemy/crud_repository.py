@@ -15,6 +15,7 @@ from sqlalchemy.orm.exc import UnmappedClassError
 
 from winter.data import CRUDRepository
 from winter.data.exceptions import NotFoundException
+from .repository_implementation import get_repository_implementation
 
 T = TypeVar('T')
 K = TypeVar('K')
@@ -35,12 +36,14 @@ def sqla_crud(repository_cls):
         raise TypeError('sqla_crud does not support entities mapped to multiple tables')
 
     entity_table = mapper.tables[0]
+    implementation_cls = get_repository_implementation(repository_cls)
 
     class RepositoryImpl(repository_cls):
         """
         SQLAlchemy implementation for CRUDRepository
         This repository implementation is not thread-safe.
         """
+
         class RepositoryException(Exception):
             pass
 
@@ -132,11 +135,12 @@ def sqla_crud(repository_cls):
             return [self.save(entity) for entity in entities]
 
         @inject
-        def __init__(self, engine: Engine):
+        def __init__(self, engine: Engine, implementation: implementation_cls):
             self._engine = engine
             self._session_factory = sessionmaker(bind=self._engine)
             self._identity_map = {}
             self._sessions = {}
+            self._implementation = implementation
 
     # def func1(self, name, lastname):
     #     return self._session_factory().query(entity_cls).filter(

@@ -11,7 +11,7 @@ from sqlalchemy.orm import mapper
 
 from winter.data import CRUDRepository
 from winter.data.exceptions import NotFoundException
-from winter_sqlalchemy.repository import sqla_crud
+from winter_sqlalchemy import sqla_crud
 
 
 class MyEntity:
