@@ -1,10 +1,11 @@
 import django
+from django.conf import settings
 
 from .entities import Guest
 
 
 def pytest_configure():
-    from django.conf import settings
+
     settings.configure(
         ROOT_URLCONF='tests.urls',
         REST_FRAMEWORK={
@@ -24,6 +25,10 @@ def pytest_configure():
             'tests',
         ),
     )
-    django.setup()
+
+    import winter.web
     import winter_openapi
+
+    django.setup()
+    winter.web.setup()
     winter_openapi.setup()

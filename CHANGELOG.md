@@ -20,3 +20,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Move type_utils to winter.core.utils.typing
 - Extract winter.schema to winter_openapi (winter_openapi.setup should be called manually now)
 - Extract winter.drf and winter.django to winter_django (JSONRenderer moved to winter_django.renderers.JSONRenderer)
+- winter.web.setup() should be called manually
