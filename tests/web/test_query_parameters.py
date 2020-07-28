@@ -1,3 +1,5 @@
+from enum import Enum
+from enum import IntEnum
 from typing import List
 from typing import Optional
 
@@ -188,3 +190,35 @@ def test_query_parameter(date, date_time, boolean, optional_boolean, array, stri
     # Act
     http_response = client.get(base_uri)
     assert http_response.data == expected_data
+
+
+class Enum1(Enum):
+    FOO = 1
+    BAR = 2
+
+
+class Enum2(IntEnum):
+    ZIG = 1
+    ZAG = 2
+
+
+@pytest.mark.parametrize('query_string, argument_name, expected_value', [
+    ('enum1=2', 'enum1', Enum1.BAR),
+    ('enum1=2', 'enum2', Enum2.ZIG),
+    ('enum2=2', 'enum1', Enum1.FOO),
+    ('enum2=2', 'enum2', Enum2.ZAG),
+])
+def test_int_enum_query_parameter(argument_name, query_string, expected_value):
+    @winter.route_get('{?enum1,enum2}')
+    def method(enum1: Enum1 = Enum1.FOO, enum2: Enum2 = Enum2.ZIG):
+        return enum1, enum2
+
+    resolver = QueryParameterArgumentResolver()
+    argument = method.get_argument(argument_name)
+    request = get_request(query_string)
+
+    # Act
+    resolved_value = resolver.resolve_argument(argument, request, {})
+
+    # Assert
+    assert resolved_value == expected_value
